@@ -8,6 +8,8 @@
   <script type="application/ld+json">
   [{"@context":"https://schema.org","@type":"Restaurant","name":"Ô Petit Bayon","address":{"@type":"PostalAddress","streetAddress":"20 Av. de l'Isle","addressLocality":"Saint-Gaudens","postalCode":"31800","addressCountry":"FR"},"telephone":"+33988582277","servesCuisine":["Cambodgienne","Thaïlandaise","Chinoise"],"priceRange":"€€","openingHours":["Tu-Sa 12:00-14:00","Tu-Sa 19:00-22:00"]},{"@context":"https://schema.org","@type":"FoodEstablishment","name":"Ô Petit Cambodge","address":{"@type":"PostalAddress","streetAddress":"3 Pl. Saint-Raymond","addressLocality":"Saint-Gaudens","postalCode":"31800","addressCountry":"FR"},"telephone":"+33988582277","openingHours":["Mo-Sa 10:30-14:00","Mo-Sa 16:00-20:00"]}]
   </script>
+  <link rel="icon" type="image/png" href="./logo-bayon.png">
+  <link rel="apple-touch-icon" href="./logo-bayon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 
@@ -1209,6 +1211,89 @@
     .avis-grid { grid-template-columns: 1fr; }
   }
 
+  /* ===================== QTY SELECTOR ===================== */
+  .mrow-right { display:flex; align-items:center; gap:0.8rem; flex-shrink:0; }
+  .qty { display:flex; align-items:center; gap:0.4rem; }
+  .qty-btn {
+    width:22px; height:22px; border-radius:50%;
+    border:1px solid var(--line); background:transparent;
+    color:var(--ink-2); font-size:0.9rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.2s; padding:0;
+  }
+  .qty-btn:hover { border-color:var(--amber); color:var(--amber); }
+  .qty-n {
+    font-size:0.82rem; font-weight:500; color:var(--ink);
+    min-width:14px; text-align:center;
+  }
+  .qty-n.active { color:var(--amber); }
+
+  /* ===================== PANIER ===================== */
+  .panier {
+    position:fixed; bottom:0; right:0;
+    width:min(380px, 100vw);
+    background:var(--white);
+    border-top:1px solid var(--line);
+    border-left:1px solid var(--line);
+    box-shadow:-4px -4px 32px rgba(0,0,0,0.08);
+    z-index:150; display:flex; flex-direction:column;
+    max-height:70vh; border-radius:12px 0 0 0;
+    transition:transform 0.35s var(--ease);
+  }
+  .panier.hidden { transform:translateY(100%); }
+  .panier-header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:1rem 1.2rem; border-bottom:1px solid var(--line-soft);
+  }
+  .panier-title {
+    font-family:var(--font-d); font-size:1.1rem; font-weight:600;
+  }
+  .panier-close {
+    background:none; border:none; font-size:1.4rem;
+    color:var(--ink-3); cursor:pointer; padding:0 4px;
+  }
+  .panier-items {
+    flex:1; overflow-y:auto; padding:0.8rem 1.2rem;
+    display:flex; flex-direction:column; gap:0.6rem;
+  }
+  .panier-item {
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.84rem; padding:0.4rem 0; border-bottom:1px solid var(--line-soft);
+  }
+  .panier-item-nom { color:var(--ink-2); flex:1; }
+  .panier-item-prix {
+    font-family:var(--font-d); font-weight:600;
+    color:var(--amber); margin-left:1rem; white-space:nowrap;
+  }
+  .panier-footer {
+    padding:1rem 1.2rem; border-top:1px solid var(--line-soft);
+    display:flex; flex-direction:column; gap:0.8rem;
+  }
+  .panier-total { font-size:0.85rem; color:var(--ink-2); text-align:right; }
+  .panier-total strong {
+    font-family:var(--font-d); font-size:1.1rem; color:var(--amber);
+  }
+  .panier-cta { margin:0; }
+  .btn-forest { background:var(--amber); color:#fff; }
+  .btn-forest:hover { background:var(--amber-2); transform:translateY(-1px); }
+  .panier-fab {
+    position:fixed; bottom:1.5rem; left:50%;
+    transform:translateX(-50%);
+    background:var(--amber); color:#fff;
+    font-family:var(--font-b); font-size:0.75rem; font-weight:500;
+    letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.8rem 1.6rem; border:none; border-radius:999px;
+    box-shadow:0 4px 20px rgba(92,45,14,0.3);
+    cursor:pointer; z-index:149; white-space:nowrap;
+    transition:all 0.3s var(--ease-s);
+  }
+  .panier-fab.hidden {
+    opacity:0; transform:translateX(-50%) translateY(20px); pointer-events:none;
+  }
+  .panier-fab:hover {
+    background:var(--amber-2); box-shadow:0 6px 24px rgba(92,45,14,0.4);
+  }
+
   /* ===================== WHATSAPP FAB ===================== */
   #fab-wa {
     position: fixed;
@@ -1662,25 +1747,25 @@
         <div class="m-2col">
           <div>
             <div class="mcat">Nems</div>
-            <div class="mrow r"><span class="mrow-n">Nem porc / poulet</span><span class="mrow-p a">1,00 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Nem légumes / crevettes / crabe</span><span class="mrow-p a">1,50 €</span></div>
+            <div class="mrow r" data-nom="Nem porc / poulet" data-prix="1.00"><span class="mrow-n">Nem porc / poulet</span><div class="mrow-right"><span class="mrow-p a">1,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Nem légumes / crevettes / crabe" data-prix="1.50"><span class="mrow-n">Nem légumes / crevettes / crabe</span><div class="mrow-right"><span class="mrow-p a">1,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Samoussas</div>
-            <div class="mrow r"><span class="mrow-n">Samoussa bœuf / légumes / crevettes</span><span class="mrow-p a">0,90 €</span></div>
+            <div class="mrow r" data-nom="Samoussa bœuf / légumes / crevettes" data-prix="0.90"><span class="mrow-n">Samoussa bœuf / légumes / crevettes</span><div class="mrow-right"><span class="mrow-p a">0,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Raviolis</div>
-            <div class="mrow r"><span class="mrow-n">Ravioli poulet / porc / crevettes / légumes</span><span class="mrow-p a">0,90 €</span></div>
+            <div class="mrow r" data-nom="Ravioli poulet / porc / crevettes / légumes" data-prix="0.90"><span class="mrow-n">Ravioli poulet / porc / crevettes / légumes</span><div class="mrow-right"><span class="mrow-p a">0,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Salades</div>
-            <div class="mrow r"><span class="mrow-n">Salade Nems / Poulet</span><span class="mrow-p a">6,50 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Salade Crevettes</span><span class="mrow-p a">7,90 €</span></div>
+            <div class="mrow r" data-nom="Salade Nems / Poulet" data-prix="6.50"><span class="mrow-n">Salade Nems / Poulet</span><div class="mrow-right"><span class="mrow-p a">6,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Salade Crevettes" data-prix="7.90"><span class="mrow-n">Salade Crevettes</span><div class="mrow-right"><span class="mrow-p a">7,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
           </div>
           <div>
             <div class="mcat">Entrées diverses</div>
-            <div class="mrow r"><span class="mrow-n">Rouleaux de printemps</span><span class="mrow-p a">3,00 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Beignet de crevettes / calamar</span><span class="mrow-p a">1,50 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Accras de morue</span><span class="mrow-p a">1,50 €</span></div>
-            <div class="mrow r d2"><span class="mrow-n">Bouchée crevettes / porc</span><span class="mrow-p a">0,90 €</span></div>
-            <div class="mrow r d2"><span class="mrow-n">Crabe farci</span><span class="mrow-p a">5,50 €</span></div>
-            <div class="mrow r d3"><span class="mrow-n">Crevette farcie</span><span class="mrow-p a">2,90 €</span></div>
-            <div class="mrow r d3"><span class="mrow-n">Poulet / Crevette croustillante</span><span class="mrow-p a">1,50 €</span></div>
+            <div class="mrow r" data-nom="Rouleaux de printemps" data-prix="3.00"><span class="mrow-n">Rouleaux de printemps</span><div class="mrow-right"><span class="mrow-p a">3,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Beignet de crevettes / calamar" data-prix="1.50"><span class="mrow-n">Beignet de crevettes / calamar</span><div class="mrow-right"><span class="mrow-p a">1,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Accras de morue" data-prix="1.50"><span class="mrow-n">Accras de morue</span><div class="mrow-right"><span class="mrow-p a">1,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d2" data-nom="Bouchée crevettes / porc" data-prix="0.90"><span class="mrow-n">Bouchée crevettes / porc</span><div class="mrow-right"><span class="mrow-p a">0,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d2" data-nom="Crabe farci" data-prix="5.50"><span class="mrow-n">Crabe farci</span><div class="mrow-right"><span class="mrow-p a">5,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d3" data-nom="Crevette farcie" data-prix="2.90"><span class="mrow-n">Crevette farcie</span><div class="mrow-right"><span class="mrow-p a">2,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d3" data-nom="Poulet / Crevette croustillante" data-prix="1.50"><span class="mrow-n">Poulet / Crevette croustillante</span><div class="mrow-right"><span class="mrow-p a">1,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
           </div>
         </div>
       </div>
@@ -1689,23 +1774,23 @@
         <div class="m-2col">
           <div>
             <div class="mcat">Poulet</div>
-            <div class="mrow r"><span class="mrow-n">Poulet curry / saté / gingembre / légumes</span><span class="mrow-p a">7,50 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Brochette de poulet</span><span class="mrow-p a">2,50 €</span></div>
+            <div class="mrow r" data-nom="Poulet curry / saté / gingembre / légumes" data-prix="7.50"><span class="mrow-n">Poulet curry / saté / gingembre / légumes</span><div class="mrow-right"><span class="mrow-p a">7,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Brochette de poulet" data-prix="2.50"><span class="mrow-n">Brochette de poulet</span><div class="mrow-right"><span class="mrow-p a">2,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Porc</div>
-            <div class="mrow r"><span class="mrow-n">Porc caramel / cambodgien / légumes / saté</span><span class="mrow-p a">7,50 €</span></div>
+            <div class="mrow r" data-nom="Porc caramel / cambodgien / légumes / saté" data-prix="7.50"><span class="mrow-n">Porc caramel / cambodgien / légumes / saté</span><div class="mrow-right"><span class="mrow-p a">7,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Accompagnements</div>
-            <div class="mrow r"><span class="mrow-n">Riz nature</span><span class="mrow-p a">2,00 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Riz cantonais / thaï</span><span class="mrow-p a">4,00 €</span></div>
-            <div class="mrow r d2"><span class="mrow-n">Nouilles sautées</span><span class="mrow-p a">4,00 €</span></div>
+            <div class="mrow r" data-nom="Riz nature" data-prix="2.00"><span class="mrow-n">Riz nature</span><div class="mrow-right"><span class="mrow-p a">2,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Riz cantonais / thaï" data-prix="4.00"><span class="mrow-n">Riz cantonais / thaï</span><div class="mrow-right"><span class="mrow-p a">4,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d2" data-nom="Nouilles sautées" data-prix="4.00"><span class="mrow-n">Nouilles sautées</span><div class="mrow-right"><span class="mrow-p a">4,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
           </div>
           <div>
             <div class="mcat">Bœuf</div>
-            <div class="mrow r"><span class="mrow-n">Bœuf Lok Lak / thaï / piquant</span><span class="mrow-p a">8,50 €</span></div>
+            <div class="mrow r" data-nom="Bœuf Lok Lak / thaï / piquant" data-prix="8.50"><span class="mrow-n">Bœuf Lok Lak / thaï / piquant</span><div class="mrow-right"><span class="mrow-p a">8,50 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Seiche</div>
-            <div class="mrow r"><span class="mrow-n">Seiche piquante / curry / légumes</span><span class="mrow-p a">8,90 €</span></div>
+            <div class="mrow r" data-nom="Seiche piquante / curry / légumes" data-prix="8.90"><span class="mrow-n">Seiche piquante / curry / légumes</span><div class="mrow-right"><span class="mrow-p a">8,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
             <div class="mcat">Crevettes & Canard</div>
-            <div class="mrow r"><span class="mrow-n">Crevettes curry / piquantes / légumes</span><span class="mrow-p a">8,90 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Canard laqué / citronnelle</span><span class="mrow-p a">8,90 €</span></div>
+            <div class="mrow r" data-nom="Crevettes curry / piquantes / légumes" data-prix="8.90"><span class="mrow-n">Crevettes curry / piquantes / légumes</span><div class="mrow-right"><span class="mrow-p a">8,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Canard laqué / citronnelle" data-prix="8.90"><span class="mrow-n">Canard laqué / citronnelle</span><div class="mrow-right"><span class="mrow-p a">8,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
           </div>
         </div>
       </div>
@@ -1714,19 +1799,19 @@
         <div class="m-2col">
           <div>
             <div class="mcat">Douceurs</div>
-            <div class="mrow r"><span class="mrow-n">Nougat dur / mou</span><span class="mrow-p a">3,00 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Tartelette coco</span><span class="mrow-p a">3,00 €</span></div>
-            <div class="mrow r d2"><span class="mrow-n">Gâteaux soja / coco</span><span class="mrow-p a">3,00 €</span></div>
-            <div class="mrow r d3"><span class="mrow-n">Lychees · Salade de fruits</span><span class="mrow-p a">3,00 €</span></div>
+            <div class="mrow r" data-nom="Nougat dur / mou" data-prix="3.00"><span class="mrow-n">Nougat dur / mou</span><div class="mrow-right"><span class="mrow-p a">3,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Tartelette coco" data-prix="3.00"><span class="mrow-n">Tartelette coco</span><div class="mrow-right"><span class="mrow-p a">3,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d2" data-nom="Gâteaux soja / coco" data-prix="3.00"><span class="mrow-n">Gâteaux soja / coco</span><div class="mrow-right"><span class="mrow-p a">3,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d3" data-nom="Lychees · Salade de fruits" data-prix="3.00"><span class="mrow-n">Lychees · Salade de fruits</span><div class="mrow-right"><span class="mrow-p a">3,00 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
           </div>
           <div>
             <div class="mcat">Mochis</div>
-            <div class="mrow r"><span class="mrow-n">Mochi sésame</span><span class="mrow-p a">5,90 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Mochi cacahuète</span><span class="mrow-p a">5,90 €</span></div>
-            <div class="mrow r d2"><span class="mrow-n">Mochi haricot rouge</span><span class="mrow-p a">5,90 €</span></div>
-            <div class="mrow r d3"><span class="mrow-n">Mochi coconut</span><span class="mrow-p a">5,90 €</span></div>
-            <div class="mrow r"><span class="mrow-n">Mochi citron</span><span class="mrow-p a">5,90 €</span></div>
-            <div class="mrow r d1"><span class="mrow-n">Mochi tarot</span><span class="mrow-p a">5,90 €</span></div>
+            <div class="mrow r" data-nom="Mochi sésame" data-prix="5.90"><span class="mrow-n">Mochi sésame</span><div class="mrow-right"><span class="mrow-p a">5,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Mochi cacahuète" data-prix="5.90"><span class="mrow-n">Mochi cacahuète</span><div class="mrow-right"><span class="mrow-p a">5,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d2" data-nom="Mochi haricot rouge" data-prix="5.90"><span class="mrow-n">Mochi haricot rouge</span><div class="mrow-right"><span class="mrow-p a">5,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d3" data-nom="Mochi coconut" data-prix="5.90"><span class="mrow-n">Mochi coconut</span><div class="mrow-right"><span class="mrow-p a">5,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r" data-nom="Mochi citron" data-prix="5.90"><span class="mrow-n">Mochi citron</span><div class="mrow-right"><span class="mrow-p a">5,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
+            <div class="mrow r d1" data-nom="Mochi tarot" data-prix="5.90"><span class="mrow-n">Mochi tarot</span><div class="mrow-right"><span class="mrow-p a">5,90 €</span><div class="qty"><button class="qty-btn" onclick="addItem(this,-1)">−</button><span class="qty-n">0</span><button class="qty-btn" onclick="addItem(this,1)">+</button></div></div></div>
           </div>
         </div>
       </div>
@@ -1833,6 +1918,22 @@
     </div>
     <div class="f-copy">Cuisine cambodgienne · Thaïlandaise · Chinoise · Fait maison · Saint-Gaudens 31800</div>
   </footer>
+
+  <div id="panier" class="panier hidden">
+    <div class="panier-header">
+      <span class="panier-title">Votre commande</span>
+      <button class="panier-close" onclick="togglePanier()">×</button>
+    </div>
+    <div id="panier-items" class="panier-items"></div>
+    <div class="panier-footer">
+      <div class="panier-total">Total : <strong id="panier-total">0,00 €</strong></div>
+      <button class="btn btn-forest panier-cta" onclick="validerCommande()">Valider ma commande</button>
+    </div>
+  </div>
+
+  <button id="panier-fab" class="panier-fab hidden" onclick="togglePanier()">
+    🛒 <span id="panier-count">0 article</span> — <span id="panier-fab-total">0,00 €</span>
+  </button>
 </div>
 
 <div id="fab">
@@ -2108,7 +2209,61 @@
     });
   })();
 
-  /* ========== 10. PRINT MENU ========== */
+  /* ========== 10. PANIER ========== */
+  const cart = {};
+
+  function addItem(btn, delta){
+    const row = btn.closest('.mrow');
+    const nom = row.dataset.nom;
+    const prix = parseFloat(row.dataset.prix);
+    const qtyEl = row.querySelector('.qty-n');
+    if(!cart[nom]) cart[nom] = { prix, qty: 0 };
+    cart[nom].qty = Math.max(0, cart[nom].qty + delta);
+    if(cart[nom].qty === 0) delete cart[nom];
+    qtyEl.textContent = cart[nom]?.qty || 0;
+    qtyEl.classList.toggle('active', (cart[nom]?.qty || 0) > 0);
+    updatePanier();
+  }
+
+  function updatePanier(){
+    const items = Object.entries(cart);
+    const total = items.reduce((s,[,v]) => s + v.prix * v.qty, 0);
+    const count = items.reduce((s,[,v]) => s + v.qty, 0);
+    const fab = document.getElementById('panier-fab');
+    fab.classList.toggle('hidden', count === 0);
+    document.getElementById('panier-count').textContent =
+      count + (count > 1 ? ' articles' : ' article');
+    document.getElementById('panier-fab-total').textContent =
+      total.toFixed(2).replace('.',',') + ' €';
+    const container = document.getElementById('panier-items');
+    container.innerHTML = items.length === 0
+      ? '<p style="color:var(--ink-3);font-size:0.84rem;text-align:center;padding:1rem">Aucun article</p>'
+      : items.map(([nom, v]) =>
+        `<div class="panier-item"><span class="panier-item-nom">${v.qty}× ${nom}</span><span class="panier-item-prix">${(v.prix*v.qty).toFixed(2).replace('.',',')} €</span></div>`
+      ).join('');
+    document.getElementById('panier-total').innerHTML =
+      'Total : <strong>' + total.toFixed(2).replace('.',',') + ' €</strong>';
+    if(count === 0) document.getElementById('panier').classList.add('hidden');
+  }
+
+  function togglePanier(){
+    document.getElementById('panier').classList.toggle('hidden');
+  }
+
+  function validerCommande(){
+    const items = Object.entries(cart);
+    if(!items.length) return;
+    const resume = items.map(([n,v]) =>
+      v.qty + '× ' + n + ' (' + (v.prix*v.qty).toFixed(2).replace('.',',') + '€)'
+    ).join(', ');
+    const champCommande = document.querySelector('#fw-c input[placeholder*="commande"]');
+    if(champCommande) champCommande.value = resume;
+    document.getElementById('fw-c')?.scrollIntoView({behavior:'smooth'});
+    togglePanier();
+    toast('✓ Commande ajoutée au formulaire — confirmez votre nom et téléphone');
+  }
+
+  /* ========== 11. PRINT MENU ========== */
   function printMenu(which){
     const nom = which==='b' ? 'Ô Petit Bayon — Restaurant' : 'Ô Petit Cambodge — Traiteur';
     const section = document.getElementById(which==='b' ? 'bayon' : 'cambodge');
