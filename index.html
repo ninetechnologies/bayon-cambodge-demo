@@ -487,39 +487,38 @@
     text-align: center;
     padding-bottom: 4rem;
   }
-  .hero-veil-emerald {
-    background: linear-gradient(to top,
-      var(--white) 0%,
-      rgba(250,250,248,0.2) 45%,
-      transparent 100%);
-  }
+  .hero-veil-emerald,
   .hero-veil-amber {
     background: linear-gradient(to top,
-      var(--white) 0%,
-      rgba(250,250,248,0.2) 45%,
-      transparent 100%);
+      rgba(250,250,248,1) 0%,
+      rgba(10,10,8,0.55) 40%,
+      rgba(10,10,8,0.35) 70%,
+      rgba(10,10,8,0.1) 100%);
   }
 
   .hero-sub {
     font-size: 0.6rem;
     font-weight: 500;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.32em;
     text-transform: uppercase;
-    color: var(--ink-3);
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
     margin-bottom: 0.8rem;
   }
   .hero-h {
     font-family: var(--font-d);
     font-size: clamp(3rem, 9vw, 6rem);
     font-weight: 300;
-    color: var(--ink);
+    color: #ffffff;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.6);
     line-height: 0.95;
     margin-bottom: 0.7rem;
   }
   .hero-h em { font-style: italic; }
   .hero-lead {
     font-size: 0.75rem;
-    color: var(--ink-3);
+    color: rgba(255,255,255,0.88);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
@@ -2150,20 +2149,23 @@
     <title>${nom}</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
     <style>
-      @page{size:A4;margin:18mm 20mm}
-      body{font-family:'Cormorant Garamond',Georgia,serif;background:#FAFAF8;color:#1C1C1A;margin:0;padding:32px}
+      @page{size:A4;margin:15mm 20mm}
+      *,*::before,*::after{box-sizing:border-box}
+      body{font-family:'Cormorant Garamond',Georgia,serif;background:#FAFAF8;color:#1C1C1A;margin:0;padding:24px 32px;max-width:100%}
       h1{font-size:28px;font-weight:300;letter-spacing:0.02em;margin:0 0 4px}
       .sub{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#8A8780;margin-bottom:32px}
-      table{width:100%;border-collapse:collapse}
+      table{width:100%;border-collapse:collapse;table-layout:fixed}
+      col.col-name{width:75%}
+      col.col-price{width:25%}
       tr.cat td{font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#4A4840;padding:16px 0 6px;border-bottom:1px solid #DDDBD2}
-      tr:not(.cat) td{font-size:14px;font-weight:300;padding:6px 0;border-bottom:1px solid #ECEAE3}
-      tr:not(.cat) td:last-child{text-align:right;font-weight:400;color:#5C2D0E;white-space:nowrap}
+      tr:not(.cat) td{font-size:14px;font-weight:300;padding:6px 0;border-bottom:1px solid #ECEAE3;word-wrap:break-word}
+      tr:not(.cat) td:last-child{text-align:right;font-weight:500;color:#5C2D0E;white-space:nowrap;padding-right:0}
       .footer{margin-top:40px;font-size:10px;color:#B8B0A6;letter-spacing:0.15em;text-transform:uppercase;text-align:center}
       @media print{body{background:white}}
     </style></head><body>
     <h1>${nom}</h1>
     <div class="sub">Cuisine cambodgienne · Thaïlandaise · Chinoise · Fait maison</div>
-    <table>${content}</table>
+    <table><colgroup><col class="col-name"><col class="col-price"></colgroup>${content}</table>
     <div class="footer">09 88 58 22 77 · Saint-Gaudens 31800</div>
     <script>window.print();<\/script>
     </body></html>`);
