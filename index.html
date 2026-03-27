@@ -733,13 +733,35 @@
     padding: 1rem clamp(1rem, 4vw, 2.5rem) 5rem;
   }
 
+  .tabs-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2.5rem;
+  }
+  .btn-dl {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-3);
+    margin-bottom: -1px;
+    transition: all 0.2s;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-dl:hover { color: var(--ink); border-color: var(--ink-2); }
   .m-tabs {
     display: flex;
-    border-bottom: 1px solid var(--line);
     overflow-x: auto;
     scrollbar-width: none;
-    margin-bottom: 2.5rem;
     position: relative;
+    border-bottom: none;
   }
   .m-tabs .tab-indicator {
     position: absolute;
@@ -1435,13 +1457,16 @@
     </div>
 
     <div class="m-wrap">
-      <div class="m-tabs" id="tabs-b">
-        <button class="m-tab ae" onclick="tab('b','bouche',this)">Mise en bouche</button>
-        <button class="m-tab" onclick="tab('b','salades',this)">Salades</button>
-        <button class="m-tab" onclick="tab('b','viandes',this)">Viandes</button>
-        <button class="m-tab" onclick="tab('b','poissons',this)">Poissons</button>
-        <button class="m-tab" onclick="tab('b','pad',this)">Pad Thaï</button>
-        <button class="m-tab" onclick="tab('b','menus',this)">Menus</button>
+      <div class="tabs-row">
+        <div class="m-tabs" id="tabs-b">
+          <button class="m-tab ae" onclick="tab('b','bouche',this)">Mise en bouche</button>
+          <button class="m-tab" onclick="tab('b','salades',this)">Salades</button>
+          <button class="m-tab" onclick="tab('b','viandes',this)">Viandes</button>
+          <button class="m-tab" onclick="tab('b','poissons',this)">Poissons</button>
+          <button class="m-tab" onclick="tab('b','pad',this)">Pad Thaï</button>
+          <button class="m-tab" onclick="tab('b','menus',this)">Menus</button>
+        </div>
+        <button class="btn-dl" onclick="printMenu('b')">↓ Télécharger la carte</button>
       </div>
 
       <div class="m-panel on" id="b-bouche">
@@ -1625,10 +1650,13 @@
     </div>
 
     <div class="m-wrap">
-      <div class="m-tabs" id="tabs-c">
-        <button class="m-tab aa" onclick="tab('c','entrees',this)">Entrées</button>
-        <button class="m-tab" onclick="tab('c','plats',this)">Plats</button>
-        <button class="m-tab" onclick="tab('c','desserts',this)">Desserts</button>
+      <div class="tabs-row">
+        <div class="m-tabs" id="tabs-c">
+          <button class="m-tab aa" onclick="tab('c','entrees',this)">Entrées</button>
+          <button class="m-tab" onclick="tab('c','plats',this)">Plats</button>
+          <button class="m-tab" onclick="tab('c','desserts',this)">Desserts</button>
+        </div>
+        <button class="btn-dl" onclick="printMenu('c')">↓ Télécharger la carte</button>
       </div>
 
       <div class="m-panel on" id="c-entrees">
@@ -2080,6 +2108,67 @@
       window.addEventListener('resize', moveIndicator);
     });
   })();
+
+  /* ========== 10. PRINT MENU ========== */
+  function printMenu(which){
+    const nom = which==='b' ? 'Ô Petit Bayon — Restaurant' : 'Ô Petit Cambodge — Traiteur';
+    const section = document.getElementById(which==='b' ? 'bayon' : 'cambodge');
+    const panels = section.querySelectorAll('.m-panel');
+    let content = '';
+    panels.forEach(panel=>{
+      const items = panel.querySelectorAll('.mcat, .mrow, .m-2col');
+      items.forEach(el=>{
+        if(el.classList.contains('mcat')){
+          content += `<tr class="cat"><td colspan="2">${el.textContent}</td></tr>`;
+        } else if(el.classList.contains('mrow')){
+          const n = el.querySelector('.mrow-n')?.textContent||'';
+          const p2 = el.querySelector('.mrow-p')?.textContent||'';
+          content += `<tr><td>${n}</td><td>${p2}</td></tr>`;
+        } else if(el.classList.contains('m-2col')){
+          el.querySelectorAll('.mcat, .mrow').forEach(item=>{
+            if(item.classList.contains('mcat')){
+              content += `<tr class="cat"><td colspan="2">${item.textContent}</td></tr>`;
+            } else {
+              const n = item.querySelector('.mrow-n')?.textContent||'';
+              const p2 = item.querySelector('.mrow-p')?.textContent||'';
+              content += `<tr><td>${n}</td><td>${p2}</td></tr>`;
+            }
+          });
+        }
+      });
+      // also get menu-cards
+      panel.querySelectorAll('.menu-card').forEach(card=>{
+        const name = card.querySelector('.mc-name')?.textContent||'';
+        const price = card.querySelector('.mc-price')?.textContent||'';
+        const detail = card.querySelector('.mc-detail')?.textContent||'';
+        content += `<tr class="cat"><td colspan="2">${name} — ${price}</td></tr>`;
+        if(detail) content += `<tr><td colspan="2" style="font-size:12px;color:#8A8780;padding:2px 0 12px">${detail}</td></tr>`;
+      });
+    });
+    const win = window.open('','_blank');
+    win.document.write(`<!DOCTYPE html><html><head>
+    <title>${nom}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+    <style>
+      @page{size:A4;margin:18mm 20mm}
+      body{font-family:'Cormorant Garamond',Georgia,serif;background:#FAFAF8;color:#1C1C1A;margin:0;padding:32px}
+      h1{font-size:28px;font-weight:300;letter-spacing:0.02em;margin:0 0 4px}
+      .sub{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;color:#8A8780;margin-bottom:32px}
+      table{width:100%;border-collapse:collapse}
+      tr.cat td{font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#4A4840;padding:16px 0 6px;border-bottom:1px solid #DDDBD2}
+      tr:not(.cat) td{font-size:14px;font-weight:300;padding:6px 0;border-bottom:1px solid #ECEAE3}
+      tr:not(.cat) td:last-child{text-align:right;font-weight:400;color:#5C2D0E;white-space:nowrap}
+      .footer{margin-top:40px;font-size:10px;color:#B8B0A6;letter-spacing:0.15em;text-transform:uppercase;text-align:center}
+      @media print{body{background:white}}
+    </style></head><body>
+    <h1>${nom}</h1>
+    <div class="sub">Cuisine cambodgienne · Thaïlandaise · Chinoise · Fait maison</div>
+    <table>${content}</table>
+    <div class="footer">09 88 58 22 77 · Saint-Gaudens 31800</div>
+    <script>window.print();<\/script>
+    </body></html>`);
+    win.document.close();
+  }
 </script>
 </body>
 </html>
